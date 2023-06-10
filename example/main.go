@@ -9,9 +9,9 @@ import (
 	"github.com/zakirkun/infra-go/example/models"
 	routers "github.com/zakirkun/infra-go/example/routers"
 	"github.com/zakirkun/infra-go/infrastructure"
-	"github.com/zakirkun/infra-go/internal/config"
-	"github.com/zakirkun/infra-go/internal/database"
-	"github.com/zakirkun/infra-go/internal/server"
+	"github.com/zakirkun/infra-go/pkg/config"
+	"github.com/zakirkun/infra-go/pkg/database"
+	"github.com/zakirkun/infra-go/pkg/server"
 )
 
 var configFile *string

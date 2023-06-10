@@ -3,6 +3,7 @@ module github.com/zakirkun/infra-go
 go 1.20
 
 require (
+	github.com/google/uuid v1.3.0
 	github.com/labstack/echo/v4 v4.10.2
 	github.com/spf13/viper v1.16.0
 	gorm.io/driver/mysql v1.5.1
@@ -15,7 +16,6 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect

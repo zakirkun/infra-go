@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -22,7 +23,9 @@ func InitRouters() http.Handler {
 		LogRoutePath: true,
 		LogHost:      true,
 		BeforeNextFunc: func(c echo.Context) {
-			// c.Set("customValueFromContext", 42)
+			if c.Request().Header.Get(echo.HeaderXRequestID) == "" {
+				c.Request().Header.Set(echo.HeaderXRequestID, uuid.NewString())
+			}
 		},
 		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
 			fmt.Printf("[%v] REQUEST: uri: %v, Host: %v, Method: %v, UserAgent: %v, RoutePath: %v, IP: %v\n", v.RequestID, v.URI, v.Host, v.Method, v.UserAgent, v.RoutePath, v.RemoteIP)

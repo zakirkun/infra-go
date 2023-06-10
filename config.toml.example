@@ -1,0 +1,12 @@
+[server]
+mode="debug"
+port="8000"
+http_timeout=60
+
+[database]
+db_driver="mysql"
+db_host="localhost"
+db_port="3306"
+db_name="dbname"
+db_username="user"
+db_password="pass"

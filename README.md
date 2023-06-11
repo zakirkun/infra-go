@@ -96,7 +96,7 @@ func setConfig() {
 }
 
 func SetMigration() {
-	err := database.NewMigration(models.Account{})
+	err := database.NewMigration(&models.Users{})
 	log.Printf("Migration Info : %v", err)
 }
 

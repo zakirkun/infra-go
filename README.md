@@ -1,4 +1,4 @@
-# Insfrastructure Boilerplate for Golang Project 
+# Insfrastructure SDK for Golang Project 
 Set your configuration in config.toml
 ``` example
 [server]
@@ -13,10 +13,24 @@ db_port="3306"
 db_name="your_db"
 db_username="db_user"
 db_password="db_password"
+
+[pool]
+conn_idle=10
+conn_max=20
+conn_lifetime=60
 ```
 - db_drivers : \
  We currently use 2 database drivers, `mysql` and `postgres`
 
+ ### What is Pool Connection ?
+ ---
+ Connection pooling is a mechanism used in applications to manage connections to data sources like databases. It stores ready-to-use connections, enabling the application to quickly acquire and release connections to the data source.
+---
+
+- pool \
+conn_idle : 10 (maximum number of connections in the idle connection pool)\
+conn_max : 10 (maximum number of open connections to the database)\
+conn_lifetime : 60 (maximum time in minutes for reusing a connection)
 ## Structure 
 ```
 ├── cmd

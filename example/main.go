@@ -46,13 +46,16 @@ func SetMigration() {
 
 func SetDatabase() database.DBModel {
 	return database.DBModel{
-		ServerMode: config.GetString("server.mode"),
-		Driver:     config.GetString("database.db_driver"),
-		Host:       config.GetString("database.db_host"),
-		Port:       config.GetString("database.db_port"),
-		Name:       config.GetString("database.db_name"),
-		Username:   config.GetString("database.db_username"),
-		Password:   config.GetString("database.db_password"),
+		ServerMode:   config.GetString("server.mode"),
+		Driver:       config.GetString("database.db_driver"),
+		Host:         config.GetString("database.db_host"),
+		Port:         config.GetString("database.db_port"),
+		Name:         config.GetString("database.db_name"),
+		Username:     config.GetString("database.db_username"),
+		Password:     config.GetString("database.db_password"),
+		MaxIdleConn:  config.GetInt("pool.conn_idle"),
+		MaxOpenConn:  config.GetInt("pool.conn_max"),
+		ConnLifeTime: config.GetInt("pool.conn_lifetime"),
 	}
 }
 

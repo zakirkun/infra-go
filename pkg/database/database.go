@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -11,13 +12,16 @@ import (
 )
 
 type DBModel struct {
-	ServerMode string
-	Driver     string
-	Host       string
-	Port       string
-	Name       string
-	Username   string
-	Password   string
+	ServerMode   string
+	Driver       string
+	Host         string
+	Port         string
+	Name         string
+	Username     string
+	Password     string
+	MaxIdleConn  int
+	MaxOpenConn  int
+	ConnLifeTime int
 }
 
 func (c *DBModel) OpenDB() (*gorm.DB, *error) {
@@ -41,6 +45,24 @@ func (c *DBModel) OpenDB() (*gorm.DB, *error) {
 		log.Fatalf("Cannot Connect to DB With Message %s", err.Error())
 		return nil, &err
 	}
+
+	conPool, err := db.DB()
+	if err != nil {
+		log.Fatalf("Cannot Create Connection Pool to DB With Message %s", err.Error())
+		return nil, &err
+	}
+
+	/** SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
+	**/
+	conPool.SetMaxIdleConns(c.MaxIdleConn)
+
+	/** SetMaxOpenConns sets the maximum number of open connections to the database.
+	**/
+	conPool.SetMaxOpenConns(c.MaxOpenConn)
+
+	/** SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
+	**/
+	conPool.SetConnMaxLifetime(time.Duration(c.ConnLifeTime) * time.Minute)
 
 	return db, nil
 }

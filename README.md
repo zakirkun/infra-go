@@ -1,7 +1,7 @@
 # Insfrastructure SDK for Golang Project 
 ## Installation
 ```sh
-go
+go get github.com/zakirkun/infra-go@latest
 ```
 ---
 Set your configuration in config.toml

@@ -3,6 +3,7 @@ module github.com/zakirkun/infra-go
 go 1.20
 
 require (
+	github.com/google/uuid v1.3.0
 	github.com/labstack/echo/v4 v4.10.2
 	github.com/spf13/viper v1.16.0
 	gorm.io/driver/mysql v1.5.1

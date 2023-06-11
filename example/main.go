@@ -6,11 +6,12 @@ import (
 	"os"
 	"time"
 
+	"github.com/zakirkun/infra-go/example/models"
+	routers "github.com/zakirkun/infra-go/example/routers"
 	"github.com/zakirkun/infra-go/infrastructure"
-	"github.com/zakirkun/infra-go/internal/config"
-	"github.com/zakirkun/infra-go/internal/database"
-	"github.com/zakirkun/infra-go/internal/server"
-	"github.com/zakirkun/infra-go/routers"
+	"github.com/zakirkun/infra-go/pkg/config"
+	"github.com/zakirkun/infra-go/pkg/database"
+	"github.com/zakirkun/infra-go/pkg/server"
 )
 
 var configFile *string
@@ -23,9 +24,11 @@ func init() {
 func main() {
 	setConfig()
 
-	infrastructure := infrastructure.NewInfrastructure(SetDatabase(), SetWebServer())
-	infrastructure.Database()
-	infrastructure.WebServer()
+	infra := infrastructure.NewInfrastructure(SetDatabase(), SetWebServer())
+	infra.Database()
+	SetMigration()
+
+	infra.WebServer()
 }
 
 func setConfig() {
@@ -34,6 +37,11 @@ func setConfig() {
 		log.Fatalf("Error reading config : %v", err)
 		os.Exit(1)
 	}
+}
+
+func SetMigration() {
+	err := database.NewMigration(models.Account{})
+	log.Printf("Migration Info : %v", err)
 }
 
 func SetDatabase() database.DBModel {

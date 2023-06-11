@@ -3,8 +3,8 @@ package infrastructure
 import (
 	"os"
 
-	"github.com/zakirkun/infra-go/internal/database"
-	"github.com/zakirkun/infra-go/internal/server"
+	"github.com/zakirkun/infra-go/pkg/database"
+	"github.com/zakirkun/infra-go/pkg/server"
 )
 
 type Infrastructure interface {

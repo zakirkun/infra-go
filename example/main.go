@@ -6,9 +6,11 @@ import (
 	"os"
 	"time"
 
+	"github.com/patrickmn/go-cache"
 	"github.com/zakirkun/infra-go/example/models"
 	routers "github.com/zakirkun/infra-go/example/routers"
 	"github.com/zakirkun/infra-go/infrastructure"
+	simplecache "github.com/zakirkun/infra-go/pkg/cache/simple_cache"
 	"github.com/zakirkun/infra-go/pkg/config"
 	"github.com/zakirkun/infra-go/pkg/database"
 	"github.com/zakirkun/infra-go/pkg/server"
@@ -24,7 +26,7 @@ func init() {
 func main() {
 	setConfig()
 
-	infra := infrastructure.NewInfrastructure(SetDatabase(), SetWebServer())
+	infra := infrastructure.NewInfrastructure(SetDatabase(), SetSimpleCache(), SetWebServer())
 	infra.Database()
 	SetMigration()
 
@@ -56,6 +58,14 @@ func SetDatabase() database.DBModel {
 		MaxIdleConn:  config.GetInt("pool.conn_idle"),
 		MaxOpenConn:  config.GetInt("pool.conn_max"),
 		ConnLifeTime: config.GetInt("pool.conn_lifetime"),
+	}
+}
+
+func SetSimpleCache() simplecache.SimpleCache {
+	return simplecache.SimpleCache{
+		Cache:     &cache.Cache{},
+		ExpiredAt: config.GetInt("server.cache_expired"),
+		PurgeTime: config.GetInt("server.cache_purged"),
 	}
 }
 

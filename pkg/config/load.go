@@ -6,7 +6,10 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/mitchellh/mapstructure"
 	"github.com/spf13/viper"
+
+	"github.com/zakirkun/infra-go/pkg/database"
 )
 
 type Config struct {
@@ -16,14 +19,31 @@ type Config struct {
 func NewConfig(filename string) Config {
 	return Config{filename: filename}
 }
+func (c *Config) Initialize() error {
 
-func (c Config) Initialize() error {
-	splits := strings.Split(filepath.Base(c.filename), ".")
+	configName := filepath.Base(c.filename)
 
-	viper.SetConfigName(filepath.Base(splits[0]))
+	configExtension := filepath.Ext(c.filename)
+	configExtension = strings.TrimPrefix(configExtension, ".")
+
+	viper.SetConfigName(configName)
+	viper.SetConfigType(configExtension)
 	viper.AddConfigPath(filepath.Dir(c.filename))
 
+	viper.AutomaticEnv()
 	err := viper.ReadInConfig()
+
+	if err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			return err
+		}
+		return err
+	}
+
+	var dbStructure database.DBModel
+	err = viper.Unmarshal(&dbStructure, func(c *mapstructure.DecoderConfig) {
+		c.TagName = "config"
+	})
 	if err != nil {
 		return err
 	}

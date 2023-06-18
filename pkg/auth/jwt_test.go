@@ -9,28 +9,25 @@ import (
 )
 
 func TestJWTImpl_GenerateToken(t *testing.T) {
-	jwtImpl := &auth.JWTImpl{
-		SignatureKey: "secretKey",
-		Expiration:   60,
+	data := map[string]interface{}{
+		"data":         "farda ayu",
+		"authenticate": true,
 	}
-
-	data := "Farda Ayu"
-	token, err := jwtImpl.GenerateToken(data)
+	token, err := auth.NewJWTImpl("secretKey", 60).GenerateToken(data)
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, token)
 }
 
 func TestJWTImpl_ValidateToken(t *testing.T) {
-	jwtImpl := &auth.JWTImpl{
-		SignatureKey: "secretKey",
-		Expiration:   60,
+
+	data := map[string]interface{}{
+		"data":         "farda ayu",
+		"authenticate": true,
 	}
 
-	data := "Farda Ayu"
-	token, _ := jwtImpl.GenerateToken(data)
-
-	valid, err := jwtImpl.ValidateToken(token)
+	token, _ := auth.NewJWTImpl("secretKey", 60).GenerateToken(data)
+	valid, err := auth.NewJWTImpl("secretKey", 60).ValidateToken(token)
 
 	assert.NoError(t, err)
 	assert.True(t, valid)

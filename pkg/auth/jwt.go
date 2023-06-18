@@ -8,7 +8,7 @@ import (
 )
 
 type JWT interface {
-	GenerateToken(data string) (string, error)
+	GenerateToken(data map[string]interface{}) (string, error)
 	ValidateToken(token string) (bool, error)
 }
 
@@ -21,13 +21,14 @@ func NewJWTImpl(signatureKey string, expiration int) JWT {
 	return &JWTImpl{SignatureKey: signatureKey, Expiration: expiration}
 }
 
-func (j *JWTImpl) GenerateToken(data string) (string, error) {
+func (j *JWTImpl) GenerateToken(data map[string]interface{}) (string, error) {
 	var mySigningKey = []byte(j.SignatureKey)
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 
-	claims["authorized"] = true
-	claims["name"] = data
+	for key, value := range data {
+		claims[key] = value
+	}
 
 	/**
 	-jwt expires in day-

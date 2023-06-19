@@ -12,16 +12,16 @@ import (
 )
 
 type DBModel struct {
-	ServerMode   string
-	Driver       string
-	Host         string
-	Port         string
-	Name         string
-	Username     string
-	Password     string
-	MaxIdleConn  int
-	MaxOpenConn  int
-	ConnLifeTime int
+	ServerMode   string `config:"server_mode"`
+	Driver       string `config:"db_driver"`
+	Host         string `config:"db_host"`
+	Port         string `config:"db_port"`
+	Name         string `config:"db_name"`
+	Username     string `config:"db_username"`
+	Password     string `config:"db_password"`
+	MaxIdleConn  int    `config:"conn_idle"`
+	MaxOpenConn  int    `config:"conn_max"`
+	ConnLifeTime int    `config:"conn_lifetime"`
 }
 
 func (c *DBModel) OpenDB() (*gorm.DB, *error) {

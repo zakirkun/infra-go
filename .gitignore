@@ -1,4 +1,2 @@
-config.toml
+config.*
 *.exe
-
-go.sum

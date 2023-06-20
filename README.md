@@ -4,7 +4,8 @@
 go get github.com/zakirkun/infra-go@latest
 ```
 ---
-Set your configuration in config.toml
+Create your configuration
+- toml
 ```toml
 [server]
 mode="debug"
@@ -23,6 +24,48 @@ db_password="db_password"
 conn_idle=10
 conn_max=20
 conn_lifetime=60
+```
+- json
+```json
+{
+  "server": {
+    "mode": "debug",
+    "port": "9000",
+    "http_timeout": 60
+  },
+  "database": {
+    "db_driver": "db_driver",
+    "db_host": "localhost",
+    "db_port": "3306",
+    "db_name": "your_db",
+    "db_username": "db_user",
+    "db_password": "db_password"
+  },
+  "pool": {
+    "conn_idle": 25,
+    "conn_max": 50,
+    "conn_lifetime": 60
+  }
+}
+
+```
+- yaml
+```yaml
+server:
+  mode: "debug"
+  port: "9000"
+  http_timeout: 60
+database:
+  db_driver: "db_driver"
+  db_host: "localhost"
+  db_port: "3306"
+  db_name: "your_db"
+  db_username: "db_user"
+  db_password: "db_password"
+pool:
+  conn_idle: 25
+  conn_max: 50
+  conn_lifetime: 60
 ```
 - db_drivers : \
  We currently use 2 database drivers, `mysql` and `postgres`

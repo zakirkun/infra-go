@@ -41,9 +41,13 @@ func InitRouters() http.Handler {
 	})
 
 	e.POST("/generate", func(c echo.Context) error {
-		key := c.FormValue("key")
+		user := c.FormValue("user")
 		jwtImpl := auth.NewJWTImpl(config.GetString("jwt.signature_key"), config.GetInt("jwt.day_expired"))
-		token, _ := jwtImpl.GenerateToken(key)
+
+		form := map[string]interface{}{
+			"user": user,
+		}
+		token, _ := jwtImpl.GenerateToken(form)
 
 		response := map[string]string{
 			"token":      token,
@@ -75,6 +79,18 @@ func InitRouters() http.Handler {
 		response["token"] = fmt.Sprintf("%v token valid >> %v", valid, token)
 		return c.JSON(http.StatusOK, response)
 
+	})
+
+	e.POST("/parse", func(c echo.Context) error {
+		token := c.FormValue("token")
+		jwtImpl := auth.NewJWTImpl(config.GetString("jwt.signature_key"), config.GetInt("jwt.day_expired"))
+		valid, err := jwtImpl.ParseToken(token)
+
+		if err != nil {
+			return c.JSON(http.StatusGone, err)
+		}
+
+		return c.JSON(http.StatusOK, valid)
 	})
 
 	return e

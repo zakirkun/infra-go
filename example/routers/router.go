@@ -8,7 +8,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	"github.com/zakirkun/infra-go/pkg/auth"
+	auth "github.com/zakirkun/infra-go/pkg/auth/jwt"
 	"github.com/zakirkun/infra-go/pkg/config"
 )
 

@@ -68,17 +68,16 @@ func InitRouters() http.Handler {
 
 		if err != nil {
 			response["token"] = err.Error()
-			return c.JSON(http.StatusGone, response)
+			return c.JSON(http.StatusBadRequest, response)
 		}
 
 		if !valid {
 			response["token"] = fmt.Sprintf("%v token not valid >> %v", valid, token)
-			return c.JSON(http.StatusGone, response)
+			return c.JSON(http.StatusUnauthorized, response)
 		}
 
 		response["token"] = fmt.Sprintf("%v token valid >> %v", valid, token)
 		return c.JSON(http.StatusOK, response)
-
 	})
 
 	e.POST("/parse", func(c echo.Context) error {
@@ -87,7 +86,7 @@ func InitRouters() http.Handler {
 		valid, err := jwtImpl.ParseToken(token)
 
 		if err != nil {
-			return c.JSON(http.StatusGone, err)
+			return c.JSON(http.StatusBadRequest, err)
 		}
 
 		return c.JSON(http.StatusOK, valid)

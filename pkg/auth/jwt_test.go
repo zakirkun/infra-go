@@ -10,7 +10,7 @@ import (
 
 func TestJWTImpl_GenerateToken(t *testing.T) {
 	data := map[string]interface{}{
-		"data":         "farda ayu",
+		"user":         "farda ayu",
 		"authenticate": true,
 	}
 	token, err := auth.NewJWTImpl("secretKey", 60).GenerateToken(data)
@@ -22,7 +22,7 @@ func TestJWTImpl_GenerateToken(t *testing.T) {
 func TestJWTImpl_ValidateToken(t *testing.T) {
 
 	data := map[string]interface{}{
-		"data":         "farda ayu",
+		"user":         "farda ayu",
 		"authenticate": true,
 	}
 
@@ -31,4 +31,22 @@ func TestJWTImpl_ValidateToken(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.True(t, valid)
+}
+
+func TestJWTImpl_ParseToken(t *testing.T) {
+
+	data := map[string]interface{}{
+		"user":         "farda ayu",
+		"authenticate": true,
+		"email":        "fardaayunurfatika@gmailcom",
+	}
+
+	token, _ := auth.NewJWTImpl("secretKey", 60).GenerateToken(data)
+	dataPlant, err := auth.NewJWTImpl("secretKey", 60).ParseToken(token)
+
+	assert.NoError(t, err)
+	assert.Equal(t, data["user"], dataPlant["user"])
+	assert.Equal(t, "fardaayunurfatika@gmailcom", dataPlant["email"])
+	assert.True(t, dataPlant["authenticate"].(bool))
+	assert.Equal(t, "farda ayu", dataPlant["user"])
 }

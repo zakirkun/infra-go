@@ -1,7 +1,6 @@
 package auth_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -18,7 +17,6 @@ func TestJWTImpl_GenerateToken(t *testing.T) {
 	data := "Farda Ayu"
 	token, err := jwtImpl.GenerateToken(data)
 
-	fmt.Println(token)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, token)
 }

@@ -8,8 +8,8 @@ import (
 )
 
 type JWT interface {
-	GenerateToken(data interface{}) (string, error)
-	ValidateToken(token interface{}) (bool, error)
+	GenerateToken(data string) (string, error)
+	ValidateToken(token string) (bool, error)
 }
 
 type JWTImpl struct {
@@ -17,14 +17,26 @@ type JWTImpl struct {
 	Expiration   int
 }
 
-func (j *JWTImpl) GenerateToken(data interface{}) (string, error) {
+func NewJWTImpl(signatureKey string, expiration int) JWT {
+	return &JWTImpl{SignatureKey: signatureKey, Expiration: expiration}
+}
+
+func (j *JWTImpl) GenerateToken(data string) (string, error) {
 	var mySigningKey = []byte(j.SignatureKey)
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 
 	claims["authorized"] = true
 	claims["name"] = data
-	claims["exp"] = time.Now().Add(time.Duration(j.Expiration) * 24 * 7).Unix()
+
+	/**
+	-jwt expires in day-
+	 for example, if j.Expiration is 20, then the token will expire in 20 days
+	**/
+	expirationDuration := time.Duration(j.Expiration) * 24 * time.Hour * 7
+	expirationTime := time.Now().Add(expirationDuration).Unix()
+	claims["exp"] = expirationTime
+
 	tokenString, err := token.SignedString(mySigningKey)
 
 	if err != nil {

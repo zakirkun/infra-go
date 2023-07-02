@@ -1,11 +1,11 @@
-package auth_test
+package jwt_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/zakirkun/infra-go/pkg/auth"
+	"github.com/zakirkun/infra-go/pkg/auth/jwt"
 )
 
 func TestJWTImpl_GenerateToken(t *testing.T) {
@@ -13,7 +13,7 @@ func TestJWTImpl_GenerateToken(t *testing.T) {
 		"user":         "farda ayu",
 		"authenticate": true,
 	}
-	token, err := auth.NewJWTImpl("secretKey", 60).GenerateToken(data)
+	token, err := jwt.NewJWTImpl("secretKey", 60).GenerateToken(data)
 
 	assert.NoError(t, err)
 	assert.NotEmpty(t, token)
@@ -26,8 +26,8 @@ func TestJWTImpl_ValidateToken(t *testing.T) {
 		"authenticate": true,
 	}
 
-	token, _ := auth.NewJWTImpl("secretKey", 60).GenerateToken(data)
-	valid, err := auth.NewJWTImpl("secretKey", 60).ValidateToken(token)
+	token, _ := jwt.NewJWTImpl("secretKey", 60).GenerateToken(data)
+	valid, err := jwt.NewJWTImpl("secretKey", 60).ValidateToken(token)
 
 	assert.NoError(t, err)
 	assert.True(t, valid)
@@ -41,8 +41,8 @@ func TestJWTImpl_ParseToken(t *testing.T) {
 		"email":        "fardaayunurfatika@gmailcom",
 	}
 
-	token, _ := auth.NewJWTImpl("secretKey", 60).GenerateToken(data)
-	dataPlant, err := auth.NewJWTImpl("secretKey", 60).ParseToken(token)
+	token, _ := jwt.NewJWTImpl("secretKey", 60).GenerateToken(data)
+	dataPlant, err := jwt.NewJWTImpl("secretKey", 60).ParseToken(token)
 
 	assert.NoError(t, err)
 	assert.Equal(t, data["user"], dataPlant["user"])

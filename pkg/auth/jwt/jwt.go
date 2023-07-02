@@ -1,10 +1,10 @@
-package auth
+package jwt
 
 import (
 	"fmt"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	gojwt "github.com/golang-jwt/jwt"
 )
 
 type JWT interface {
@@ -24,8 +24,8 @@ func NewJWTImpl(signatureKey string, expiration int) JWT {
 
 func (j *JWTImpl) GenerateToken(data map[string]interface{}) (string, error) {
 	var mySigningKey = []byte(j.SignatureKey)
-	token := jwt.New(jwt.SigningMethodHS256)
-	claims := token.Claims.(jwt.MapClaims)
+	token := gojwt.New(gojwt.SigningMethodHS256)
+	claims := token.Claims.(gojwt.MapClaims)
 
 	for key, value := range data {
 		claims[key] = value
@@ -48,8 +48,8 @@ func (j *JWTImpl) GenerateToken(data map[string]interface{}) (string, error) {
 }
 
 func (j *JWTImpl) ValidateToken(tokenString string) (bool, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+	token, err := gojwt.Parse(tokenString, func(token *gojwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*gojwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
@@ -60,7 +60,7 @@ func (j *JWTImpl) ValidateToken(tokenString string) (bool, error) {
 		return false, err
 	}
 
-	claims, ok := token.Claims.(jwt.MapClaims)
+	claims, ok := token.Claims.(gojwt.MapClaims)
 	if !ok || !token.Valid {
 		return false, nil
 	}
@@ -74,8 +74,8 @@ func (j *JWTImpl) ValidateToken(tokenString string) (bool, error) {
 }
 
 func (j *JWTImpl) ParseToken(tokenString string) (map[string]interface{}, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+	token, err := gojwt.Parse(tokenString, func(token *gojwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*gojwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return []byte(j.SignatureKey), nil
@@ -85,7 +85,7 @@ func (j *JWTImpl) ParseToken(tokenString string) (map[string]interface{}, error)
 		return nil, err
 	}
 
-	claims, ok := token.Claims.(jwt.MapClaims)
+	claims, ok := token.Claims.(gojwt.MapClaims)
 	if !ok || !token.Valid {
 		return nil, fmt.Errorf("invalid token")
 	}

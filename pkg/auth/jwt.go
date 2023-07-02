@@ -35,7 +35,6 @@ func (j *JWTImpl) GenerateToken(data interface{}) (string, error) {
 
 func (j *JWTImpl) ValidateToken(tokenString string) (bool, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		// Memastikan bahwa metode penandatanganan token sesuai dengan metode yang digunakan saat pembuatan token.
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
@@ -52,8 +51,6 @@ func (j *JWTImpl) ValidateToken(tokenString string) (bool, error) {
 		return false, nil
 	}
 
-	// Lakukan validasi khusus sesuai dengan kebutuhan aplikasi Anda.
-	// Contoh validasi: periksa apakah token telah kedaluwarsa.
 	expirationTime := claims["exp"].(float64)
 	if time.Now().Unix() > int64(expirationTime) {
 		return false, nil

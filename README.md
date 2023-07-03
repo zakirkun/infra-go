@@ -18,8 +18,8 @@ cache_purged = 60
 db_driver = "mysql"
 db_host = "localhost"
 db_port = "3306"
-db_name = "app_cerud"
-db_username = "fanchann"
+db_name = "your_db_name"
+db_username = "root"
 db_password = "root"
 
 [pool]
@@ -46,8 +46,8 @@ signature_key = "supersecret"
         "db_driver": "mysql",
         "db_host": "localhost",
         "db_port": "3306",
-        "db_name": "app_cerud",
-        "db_username": "fanchann",
+        "db_name": "your_db_name",
+        "db_username": "root",
         "db_password": "root"
     },
     "pool": {
@@ -75,8 +75,8 @@ database:
   db_driver: "mysql"
   db_host: "localhost"
   db_port: "3306"
-  db_name: "app_cerud"
-  db_username: "fanchann"
+  db_name: "your_db_name"
+  db_username: "root"
   db_password: "root"
 
 pool:
@@ -119,7 +119,7 @@ example:
 	// create jwt
 	dayExpired := 7 // one week
 	dataStoreToToken := map[string]interface{}{
-		"user":         "farda ayu",
+		"user":         "John Doe",
 		"authenticate": true,
 	}
 	jwToken, err := NewJWTImpl("superSecret", dayExpired).GenerateToken(dataStoreToToken)
@@ -140,6 +140,27 @@ example:
 	fmt.Println(planData)
 ```
 # Caching
+- set key and value cache
+```go
+	simpleCache := simplecache.NewSimpleCache(simplecache.SimpleCache{
+		ExpiredAt: 10, // How long will the data remain stored in the cache before being deleted
+		PurgeTime: 30, // How long will the data remain stored in the cache before it is deleted
+	})
+
+	cache := simpleCache.Open()
+	simpleCache.Set("hello", "world")
+```
+
+- get the value
+```go
+  value := simpleCache.Get("hello")
+  fmt.Println(vaue)
+```
+
+- delete key and value
+```go
+	simpleCache.Delete("hello")
+```
 
 
 # Example

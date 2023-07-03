@@ -23,24 +23,24 @@ type ICache interface {
 
 func NewSimpleCache(s SimpleCache) ICache {
 
-	return SimpleCache{
+	return &SimpleCache{
 		ExpiredAt: s.ExpiredAt,
 		PurgeTime: s.PurgeTime,
 	}
 }
 
-func (s SimpleCache) Open() *cache.Cache {
+func (s *SimpleCache) Open() *cache.Cache {
 	cacheInstance := cache.New(time.Minute*time.Duration(s.ExpiredAt), time.Minute*time.Duration(s.PurgeTime))
 	s.Cache = cacheInstance
 
 	return cacheInstance
 }
 
-func (s SimpleCache) Set(key string, data interface{}) {
+func (s *SimpleCache) Set(key string, data interface{}) {
 	s.Cache.Set(key, data, time.Minute*time.Duration(s.ExpiredAt))
 }
 
-func (s SimpleCache) Get(key string) *interface{} {
+func (s *SimpleCache) Get(key string) *interface{} {
 	data, found := s.Cache.Get(key)
 
 	if found {
@@ -50,6 +50,6 @@ func (s SimpleCache) Get(key string) *interface{} {
 	return nil
 }
 
-func (s SimpleCache) Delete(key string) {
+func (s *SimpleCache) Delete(key string) {
 	s.Cache.Delete(key)
 }

@@ -8,44 +8,57 @@ Create your configuration
 - toml
 ```toml
 [server]
-mode="debug"
-port="8000"
-http_timeout=60
+mode = "debug"
+port = "9000"
+http_timeout = 60
+cache_expired = 24
+cache_purged = 60
 
 [database]
-db_driver="db_drivers"
-db_host="localhost"
-db_port="3306"
-db_name="your_db"
-db_username="db_user"
-db_password="db_password"
+db_driver = "mysql"
+db_host = "localhost"
+db_port = "3306"
+db_name = "your_db_name"
+db_username = "root"
+db_password = "root"
 
 [pool]
-conn_idle=10
-conn_max=20
-conn_lifetime=60
+conn_idle = 10
+conn_max = 20
+conn_lifetime = 60
+
+[jwt]
+day_expired = 60
+signature_key = "supersecret"
+
 ```
 - json
 ```json
 {
-  "server": {
-    "mode": "debug",
-    "port": "9000",
-    "http_timeout": 60
-  },
-  "database": {
-    "db_driver": "db_driver",
-    "db_host": "localhost",
-    "db_port": "3306",
-    "db_name": "your_db",
-    "db_username": "db_user",
-    "db_password": "db_password"
-  },
-  "pool": {
-    "conn_idle": 25,
-    "conn_max": 50,
-    "conn_lifetime": 60
-  }
+    "server": {
+        "mode": "debug",
+        "port": "9000",
+        "http_timeout": 60,
+        "cache_expired": 24,
+        "cache_purged": 60
+    },
+    "database": {
+        "db_driver": "mysql",
+        "db_host": "localhost",
+        "db_port": "3306",
+        "db_name": "your_db_name",
+        "db_username": "root",
+        "db_password": "root"
+    },
+    "pool": {
+        "conn_idle": 10,
+        "conn_max": 20,
+        "conn_lifetime": 60
+    },
+    "jwt": {
+        "day_expired": 60,
+        "signature_key": "supersecret"
+    }
 }
 
 ```
@@ -55,17 +68,25 @@ server:
   mode: "debug"
   port: "9000"
   http_timeout: 60
+  cache_expired: 24
+  cache_purged: 60
+
 database:
-  db_driver: "db_driver"
+  db_driver: "mysql"
   db_host: "localhost"
   db_port: "3306"
-  db_name: "your_db"
-  db_username: "db_user"
-  db_password: "db_password"
+  db_name: "your_db_name"
+  db_username: "root"
+  db_password: "root"
+
 pool:
-  conn_idle: 25
-  conn_max: 50
+  conn_idle: 10
+  conn_max: 20
   conn_lifetime: 60
+
+jwt:
+  day_expired: 60
+  signature_key: "supersecret"
 ```
 - db_drivers : \
  We currently use 2 database drivers, `mysql` and `postgres`
@@ -80,152 +101,70 @@ conn_idle : 10 (maximum number of connections in the idle connection pool)\
 conn_max : 10 (maximum number of open connections to the database)\
 conn_lifetime : 60 (maximum time in minutes for reusing a connection)
 
-# Example
-#### your app structure base
-```sh
-├── config.toml
-├── go.mod
-├── go.sum
-├── main.go
-├── models
-│   └── users.go
-└── routers
-    └── routers.go
-```
-
-`main.go`
+# JSON WEB TOKEN
+- create JSON WEB TOKEN:
 ```go
-package main
-
-import (
-	"flag"
-	"log"
-	"os"
-	"time"
-
-	"github.com/zakirkun/infra-go/infrastructure"
-	"github.com/zakirkun/infra-go/pkg/config"
-	"github.com/zakirkun/infra-go/pkg/database"
-	"github.com/zakirkun/infra-go/pkg/server"
-
-    "yourApp/models"
-	"yourApp/routers"
-
-)
-
-var configFile *string
-
-func init() {
-	configFile = flag.String("c", "config.toml", "configuration file")
-	flag.Parse()
-}
-
-func main() {
-	setConfig()
-
-	infra := infrastructure.NewInfrastructure(SetDatabase(), SetWebServer())
-	infra.Database()
-	SetMigration()
-
-	infra.WebServer()
-}
-
-func setConfig() {
-	cfg := config.NewConfig(*configFile)
-	if err := cfg.Initialize(); err != nil {
-		log.Fatalf("Error reading config : %v", err)
-		os.Exit(1)
-	}
-}
-
-func SetMigration() {
-	err := database.NewMigration(&models.Users{})
-	log.Printf("Migration Info : %v", err)
-}
-
-func SetDatabase() database.DBModel {
-	return database.DBModel{
-		ServerMode:   config.GetString("server.mode"),
-		Driver:       config.GetString("database.db_driver"),
-		Host:         config.GetString("database.db_host"),
-		Port:         config.GetString("database.db_port"),
-		Name:         config.GetString("database.db_name"),
-		Username:     config.GetString("database.db_username"),
-		Password:     config.GetString("database.db_password"),
-		MaxIdleConn:  config.GetInt("pool.conn_idle"),
-		MaxOpenConn:  config.GetInt("pool.conn_max"),
-		ConnLifeTime: config.GetInt("pool.conn_lifetime"),
-	}
-}
-
-func SetWebServer() server.ServerContext {
-	return server.ServerContext{
-		Host:         ":" + config.GetString("server.port"),
-		Handler:      routers.InitRouters(),
-		ReadTimeout:  time.Duration(config.GetInt("server.http_timeout")),
-		WriteTimeout: time.Duration(config.GetInt("server.http_timeout")),
-	}
-}
+auth.NewJWTImpl(signatureKey, dayExpiration).GenerateToken(map[string]interface{})
 ```
----
-`models.go`
+- validate JSON WEB TOKEN:
 ```go
-package models
-
-import "gorm.io/gorm"
-
-type Users struct {
-	*gorm.Model
-	Username string `gorm:"not null;size:255;default:anonymous"`
-	Email    string `gorm:"not null;unique"`
-}
+auth.NewJWTImpl(signatureKey, dayExpiration).ValidateToken(JWToken)
 ```
----
-`routers.go`\
-for example we use [echo](github.com/labstack/echo) web framework
+- parse JSON WEB Token
 ```go
-package routers
+auth.NewJWTImpl(signatureKey, dayExpiratio).ParseToken(JWToken)
+```
+example:
+```go
+	// create jwt
+	dayExpired := 7 // one week
+	dataStoreToToken := map[string]interface{}{
+		"user":         "John Doe",
+		"authenticate": true,
+	}
+	jwToken, err := NewJWTImpl("superSecret", dayExpired).GenerateToken(dataStoreToToken)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(jwToken)
 
-import (
-	"fmt"
-	"net/http"
+	// validate jwt
+	valid, _ := NewJWTImpl("superSecret", dayExpired).ValidateToken(jwToken)
+	if !valid {
+		fmt.Println("token not valid")
+	}
+	fmt.Println("token valid")
 
-	"github.com/google/uuid"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-)
-
-func InitRouters() http.Handler {
-	e := echo.New()
-
-	// middleware section
-	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
-		LogStatus:    true,
-		LogURI:       true,
-		LogRemoteIP:  true,
-		LogRequestID: true,
-		LogMethod:    true,
-		LogUserAgent: true,
-		LogRoutePath: true,
-		LogHost:      true,
-		BeforeNextFunc: func(c echo.Context) {
-			if c.Request().Header.Get(echo.HeaderXRequestID) == "" {
-				c.Request().Header.Set(echo.HeaderXRequestID, uuid.NewString())
-			}
-		},
-		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
-			fmt.Printf("[%v] REQUEST: uri: %v, Host: %v, Method: %v, UserAgent: %v, RoutePath: %v, IP: %v\n", v.RequestID, v.URI, v.Host, v.Method, v.UserAgent, v.RoutePath, v.RemoteIP)
-			return nil
-		},
-	}))
-
-	e.GET("/", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, map[string]string{"messages": "Hello World!"})
+	// parse jwt
+	planData, _ := NewJWTImpl("superSecret", dayExpired).ParseToken(jwToken)
+	fmt.Println(planData)
+```
+# Caching
+- set key and value cache
+```go
+	simpleCache := simplecache.NewSimpleCache(simplecache.SimpleCache{
+		ExpiredAt: 10, // How long will the data remain stored in the cache before being deleted
+		PurgeTime: 30, // How long will the data remain stored in the cache before it is deleted
 	})
 
-	return e
-}
+	cache := simpleCache.Open()
+	simpleCache.Set("hello", "world")
 ```
+
+- get the value
+```go
+  value := simpleCache.Get("hello")
+  fmt.Println(vaue)
+```
+
+- delete key and value
+```go
+	simpleCache.Delete("hello")
+```
+
+
+# Example
+ [example](https://github.com/zakirkun/infra-go/tree/main/example)
 ---
 # How to run ?
 ```sh

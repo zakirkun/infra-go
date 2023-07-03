@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/patrickmn/go-cache"
+
 	"github.com/zakirkun/infra-go/example/models"
 	routers "github.com/zakirkun/infra-go/example/routers"
 	"github.com/zakirkun/infra-go/infrastructure"
